@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="تانکر کاران بندر">
+<title>تانکر کاران بندر | مدیریت کارگاه</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#172033;--muted:#718096;--line:#e7ebf2;--primary:#2563eb;--danger:#dc2626;--ok:#059669}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{min-height:100vh;display:flex}.side{width:245px;background:#0f172a;color:#fff;padding:18px;position:fixed;right:0;top:0;bottom:0;z-index:5}.brand{font-size:20px;font-weight:800;padding:12px 8px 22px}.brand small{display:block;color:#94a3b8;font-size:11px;margin-top:5px}.nav button{width:100%;text-align:right;background:transparent;color:#cbd5e1;padding:12px;border-radius:10px;margin:2px 0}.nav button.active,.nav button:hover{background:#1e293b;color:#fff}.main{margin-right:245px;width:calc(100% - 245px);padding:22px;max-width:1500px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.top h1{font-size:25px;margin:0}.top .date{color:var(--muted);font-size:13px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 4px 18px #1018280a}.label{color:var(--muted);font-size:12px}.value{font-size:25px;font-weight:800;margin-top:8px}.green{color:var(--ok)}.red{color:var(--danger)}.blue{color:var(--primary)}.section{display:none}.section.active{display:block}.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px}.panel h2{font-size:17px;margin:0 0 14px}.btn{background:var(--primary);color:#fff;padding:10px 14px;border-radius:10px}.btn.secondary{background:#eef2ff;color:#243b8a}.btn.danger{background:#fee2e2;color:#991b1b}.actions{display:flex;gap:8px;flex-wrap:wrap}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:right;padding:11px 9px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-weight:600}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff}.field.full{grid-column:1/-1}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:20;padding:15px}.modal.show{display:flex}.modalbox{background:#fff;border-radius:18px;width:min(680px,100%);max-height:90vh;overflow:auto;padding:20px}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.close{background:#f1f5f9;border-radius:9px;padding:7px 11px}.empty{padding:25px;text-align:center;color:var(--muted)}.badge{padding:4px 8px;border-radius:20px;font-size:11px;background:#eef2ff;color:#3730a3}.mobilebar{display:none}
+@media(max-width:900px){.side{display:none}.main{margin:0;width:100%;padding:14px;padding-bottom:80px}.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.mobilebar{display:flex;position:fixed;bottom:0;right:0;left:0;background:#fff;border-top:1px solid var(--line);z-index:10;justify-content:space-around;padding:7px}.mobilebar button{background:transparent;font-size:11px;color:#475569}.form{grid-template-columns:1fr}.top h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side"><div class="brand">تانکر کاران بندر<small>مدیریت و حسابداری کارگاه</small></div><nav class="nav" id="nav"></nav></aside>
+<main class="main">
+<div class="top"><div><h1 id="title">داشبورد</h1><div class="date" id="today"></div></div><button class="btn" onclick="openModal('invoice')">+ ثبت فاکتور</button></div>
+
+<section id="dashboard" class="section active">
+<div class="cards">
+<div class="card"><div class="label">کل درآمد</div><div class="value green" id="incomeTotal">۰</div></div>
+<div class="card"><div class="label">کل هزینه</div><div class="value red" id="expenseTotal">۰</div></div>
+<div class="card"><div class="label">سود خالص</div><div class="value blue" id="profitTotal">۰</div></div>
+<div class="card"><div class="label">مطالبات مشتریان</div><div class="value" id="debtTotal">۰</div></div>
+</div>
+<div class="grid2">
+<div class="panel"><h2>آخرین فاکتورها</h2><div class="tablewrap"><table><thead><tr><th>شماره</th><th>مشتری</th><th>خدمت</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody id="dashInvoices"></tbody></table></div></div>
+<div class="panel"><h2>دسترسی سریع</h2><div class="actions">
+<button class="btn" onclick="openModal('invoice')">🧾 فاکتور جدید</button>
+<button class="btn secondary" onclick="openModal('expense')">💸 هزینه جدید</button>
+<button class="btn secondary" onclick="openModal('customer')">👤 مشتری جدید</button>
+<button class="btn secondary" onclick="openModal('vehicle')">🚛 تانکر جدید</button>
+<button class="btn secondary" onclick="backup()">💾 پشتیبان</button>
+</div></div>
+</div>
+</section>
+
+<section id="invoices" class="section"><div class="panel"><h2>فاکتورها</h2><div class="actions"><button class="btn" onclick="openModal('invoice')">+ فاکتور جدید</button></div><div class="tablewrap"><table><thead><tr><th>شماره</th><th>تاریخ</th><th>مشتری</th><th>خدمت</th><th>مبلغ</th><th>پرداخت</th><th>عملیات</th></tr></thead><tbody id="invoiceRows"></tbody></table></div></div></section>
+
+<section id="expenses" class="section"><div class="panel"><h2>هزینه‌ها</h2><div class="actions"><button class="btn" onclick="openModal('expense')">+ ثبت هزینه</button></div><div class="tablewrap"><table><thead><tr><th>تاریخ</th><th>شرح</th><th>دسته</th><th>مبلغ</th><th>عملیات</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div></section>
+
+<section id="customers" class="section"><div class="panel"><h2>مشتریان و بدهکاران</h2><div class="actions"><button class="btn" onclick="openModal('customer')">+ مشتری</button></div><div class="tablewrap"><table><thead><tr><th>نام</th><th>تلفن</th><th>خودرو</th><th>بدهی</th><th>عملیات</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
+
+<section id="vehicles" class="section"><div class="panel"><h2>تانکرها و خودروها</h2><div class="actions"><button class="btn" onclick="openModal('vehicle')">+ خودرو</button></div><div class="tablewrap"><table><thead><tr><th>پلاک</th><th>مالک/راننده</th><th>نوع</th><th>تلفن</th><th>یادداشت</th><th>عملیات</th></tr></thead><tbody id="vehicleRows"></tbody></table></div></div></section>
+
+<section id="workers" class="section"><div class="panel"><h2>کارکنان و حقوق</h2><div class="actions"><button class="btn" onclick="openModal('worker')">+ کارمند</button></div><div class="tablewrap"><table><thead><tr><th>نام</th><th>سمت</th><th>حقوق پایه</th><th>تلفن</th><th>عملیات</th></tr></thead><tbody id="workerRows"></tbody></table></div></div></section>
+
+<section id="partners" class="section"><div class="panel"><h2>شرکا و سهم سود</h2><div class="form"><div class="field"><label>سهم شریک اول (%)</label><input id="p1" type="number" value="50"></div><div class="field"><label>سهم شریک دوم (%)</label><input id="p2" type="number" value="50"></div></div><button class="btn" style="margin-top:12px" onclick="savePartners()">ذخیره سهم‌ها</button><p id="partnerMsg"></p></div></section>
+
+<section id="reports" class="section"><div class="grid2"><div class="panel"><h2>گزارش مالی</h2><div id="reportBox"></div></div><div class="panel"><h2>پشتیبان‌گیری</h2><p class="label">اطلاعات روی همین دستگاه ذخیره می‌شود.</p><div class="actions"><button class="btn" onclick="backup()">دانلود پشتیبان</button><label class="btn secondary">بازیابی<input hidden type="file" accept=".json" onchange="restore(this)"></label></div></div></div></section>
+</main></div>
+<div class="mobilebar" id="mobilebar"></div>
+
+<div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h2 id="modalTitle">ثبت</h2><button class="close" onclick="closeModal()">بستن</button></div><div id="modalBody"></div></div></div>
+
+<script>
+const key="tkb_v1_data";
+let db=JSON.parse(localStorage.getItem(key)||'{"invoices":[],"expenses":[],"customers":[],"vehicles":[],"workers":[],"partners":{"p1":50,"p2":50}}');
+const fa=n=>new Intl.NumberFormat('fa-IR').format(Number(n)||0);
+const money=n=>fa(n)+" ریال";
+const today=new Date().toLocaleDateString('fa-IR');
+document.getElementById("today").textContent=today;
+const menus=[["dashboard","🏠 داشبورد"],["invoices","🧾 فاکتورها"],["expenses","💸 هزینه‌ها"],["customers","👤 مشتریان"],["vehicles","🚛 تانکرها"],["workers","👷 کارکنان"],["partners","🤝 شرکا"],["reports","📊 گزارش‌ها"]];
+function renderNav(){
+ const nav=document.getElementById("nav"), mob=document.getElementById("mobilebar");
+ nav.innerHTML=menus.map((m,i)=>`<button class="${i===0?'active':''}" onclick="show('${m[0]}',this)">${m[1]}</button>`).join("");
+ mob.innerHTML=menus.slice(0,5).map((m,i)=>`<button onclick="show('${m[0]}')">${m[1].replace(/^\\S+ /,'')}</button>`).join("");
+}
+function show(id,el){
+ document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");
+ document.getElementById("title").textContent=menus.find(x=>x[0]===id)?.[1].replace(/^\\S+ /,"")||"داشبورد";
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active")); if(el)el.classList.add("active");
+ render();
+}
+function save(){localStorage.setItem(key,JSON.stringify(db));render();}
+function modalFields(type){
+ const forms={
+ invoice:`<div class="form"><div class="field"><label>مشتری</label><input id="f_customer"></div><div class="field"><label>خدمت</label><input id="f_service" placeholder="شستشو، تعمیر، سرویس..."></div><div class="field"><label>مبلغ</label><input id="f_amount" type="number"></div><div class="field"><label>مبلغ پرداختی</label><input id="f_paid" type="number"></div><div class="field full"><label>توضیحات</label><textarea id="f_note"></textarea></div></div><button class="btn" style="margin-top:14px" onclick="addInvoice()">ثبت فاکتور</button>`,
+ expense:`<div class="form"><div class="field"><label>شرح</label><input id="e_desc"></div><div class="field"><label>دسته</label><select id="e_cat"><option>سوخت</option><option>قطعات</option><option>حقوق</option><option>اجاره</option><option>قبوض</option><option>سایر</option></select></div><div class="field"><label>مبلغ</label><input id="e_amount" type="number"></div></div><button class="btn" style="margin-top:14px" onclick="addExpense()">ثبت هزینه</button>`,
+ customer:`<div class="form"><div class="field"><label>نام مشتری</label><input id="c_name"></div><div class="field"><label>تلفن</label><input id="c_phone"></div><div class="field"><label>خودرو/پلاک</label><input id="c_vehicle"></div><div class="field"><label>بدهی اولیه</label><input id="c_debt" type="number" value="0"></div></div><button class="btn" style="margin-top:14px" onclick="addCustomer()">ثبت مشتری</button>`,
+ vehicle:`<div class="form"><div class="field"><label>پلاک</label><input id="v_plate"></div><div class="field"><label>مالک/راننده</label><input id="v_owner"></div><div class="field"><label>نوع خودرو</label><input id="v_type" value="تانکر"></div><div class="field"><label>تلفن</label><input id="v_phone"></div><div class="field full"><label>یادداشت</label><textarea id="v_note"></textarea></div></div><button class="btn" style="margin-top:14px" onclick="addVehicle()">ثبت خودرو</button>`,
+ worker:`<div class="form"><div class="field"><label>نام</label><input id="w_name"></div><div class="field"><label>سمت</label><input id="w_role"></div><div class="field"><label>حقوق پایه</label><input id="w_salary" type="number"></div><div class="field"><label>تلفن</label><input id="w_phone"></div></div><button class="btn" style="margin-top:14px" onclick="addWorker()">ثبت کارمند</button>`
+ };
+ return forms[type];
+}
+function openModal(type){document.getElementById("modalTitle").textContent={invoice:"فاکتور جدید",expense:"ثبت هزینه",customer:"مشتری جدید",vehicle:"خودرو/تانکر جدید",worker:"کارمند جدید"}[type];document.getElementById("modalBody").innerHTML=modalFields(type);document.getElementById("modal").classList.add("show")}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function addInvoice(){let a=+f_amount.value||0,p=+f_paid.value||0;db.invoices.unshift({id:Date.now(),no:"INV-"+(1000+db.invoices.length+1),date:today,customer:f_customer.value,service:f_service.value,amount:a,paid:p,note:f_note.value});closeModal();save()}
+function addExpense(){db.expenses.unshift({id:Date.now(),date:today,desc:e_desc.value,cat:e_cat.value,amount:+e_amount.value||0});closeModal();save()}
+function addCustomer(){db.customers.unshift({id:Date.now(),name:c_name.value,phone:c_phone.value,vehicle:c_vehicle.value,debt:+c_debt.value||0});closeModal();save()}
+function addVehicle(){db.vehicles.unshift({id:Date.now(),plate:v_plate.value,owner:v_owner.value,type:v_type.value,phone:v_phone.value,note:v_note.value});closeModal();save()}
+function addWorker(){db.workers.unshift({id:Date.now(),name:w_name.value,role:w_role.value,salary:+w_salary.value||0,phone:w_phone.value});closeModal();save()}
+function del(arr,id){if(confirm("حذف شود؟")){db[arr]=db[arr].filter(x=>x.id!==id);save()}}
+function render(){
+ let income=db.invoices.reduce((s,x)=>s+x.amount,0), exp=db.expenses.reduce((s,x)=>s+x.amount,0), debt=db.invoices.reduce((s,x)=>s+Math.max(0,x.amount-x.paid),0)+db.customers.reduce((s,x)=>s+x.debt,0);
+ incomeTotal.textContent=money(income);expenseTotal.textContent=money(exp);profitTotal.textContent=money(income-exp);debtTotal.textContent=money(debt);
+ dashInvoices.innerHTML=db.invoices.slice(0,7).map(x=>`<tr><td>${x.no}</td><td>${x.customer||"-"}</td><td>${x.service||"-"}</td><td>${money(x.amount)}</td><td><span class="badge">${x.paid>=x.amount?"تسویه":"بدهکار"}</span></td></tr>`).join("")||`<tr><td colspan=5 class=empty>هنوز فاکتوری ثبت نشده</td></tr>`;
+ invoiceRows.innerHTML=db.invoices.map(x=>`<tr><td>${x.no}</td><td>${x.date}</td><td>${x.customer||"-"}</td><td>${x.service||"-"}</td><td>${money(x.amount)}</td><td>${money(x.paid)}</td><td><button class="btn danger" onclick="del('invoices',${x.id})">حذف</button></td></tr>`).join("")||`<tr><td colspan=7 class=empty>موردی نیست</td></tr>`;
+ expenseRows.innerHTML=db.expenses.map(x=>`<tr><td>${x.date}</td><td>${x.desc}</td><td>${x.cat}</td><td>${money(x.amount)}</td><td><button class="btn danger" onclick="del('expenses',${x.id})">حذف</button></td></tr>`).join("")||`<tr><td colspan=5 class=empty>موردی نیست</td></tr>`;
+ customerRows.innerHTML=db.customers.map(x=>`<tr><td>${x.name}</td><td>${x.phone||"-"}</td><td>${x.vehicle||"-"}</td><td>${money(x.debt)}</td><td><button class="btn danger" onclick="del('customers',${x.id})">حذف</button></td></tr>`).join("")||`<tr><td colspan=5 class=empty>مشتری ثبت نشده</td></tr>`;
+ vehicleRows.innerHTML=db.vehicles.map(x=>`<tr><td>${x.plate}</td><td>${x.owner}</td><td>${x.type}</td><td>${x.phone||"-"}</td><td>${x.note||"-"}</td><td><button class="btn danger" onclick="del('vehicles',${x.id})">حذف</button></td></tr>`).join("")||`<tr><td colspan=6 class=empty>خودرویی ثبت نشده</td></tr>`;
+ workerRows.innerHTML=db.workers.map(x=>`<tr><td>${x.name}</td><td>${x.role}</td><td>${money(x.salary)}</td><td>${x.phone||"-"}</td><td><button class="btn danger" onclick="del('workers',${x.id})">حذف</button></td></tr>`).join("")||`<tr><td colspan=5 class=empty>کارمندی ثبت نشده</td></tr>`;
+ p1.value=db.partners.p1;p2.value=db.partners.p2;
+ reportBox.innerHTML=`<p>درآمد: <b>${money(income)}</b></p><p>هزینه: <b>${money(exp)}</b></p><p>سود خالص: <b>${money(income-exp)}</b></p><p>مطالبات: <b>${money(debt)}</b></p>`;
+}
+function savePartners(){let a=+p1.value||0,b=+p2.value||0;if(a+b!==100){partnerMsg.textContent="مجموع سهم‌ها باید ۱۰۰٪ باشد.";return}db.partners={p1:a,p2:b};save();partnerMsg.textContent="ذخیره شد ✅"}
+function backup(){let blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="tanker-karan-bandar-backup.json";a.click()}
+function restore(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();alert("بازیابی شد")}catch(e){alert("فایل پشتیبان نامعتبر است")}};r.readAsText(f)}
+renderNav();render();
+</script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js');</script></body></html>
